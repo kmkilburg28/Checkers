@@ -70,7 +70,6 @@ class Game {
 				await this.animateManualMove(action)
 			}
 			this.forceAnimationFramesThen(this, "nextTurn")
-			// console.log(getBoardStateFromURL())
 			setBoardStateInURL(this.board.getState())
 		}
 	}
@@ -84,7 +83,7 @@ class Game {
 				window.requestAnimationFrame(() => recursiveRequestAnimationFrame(i-1))
 			}
 		}
-		recursiveRequestAnimationFrame(6)
+		recursiveRequestAnimationFrame(4)
 	}
 
 
@@ -114,13 +113,16 @@ class Game {
 		pieceDiv.classList.remove("square-"+startPos)
 		pieceDiv.pos = endPos
 		pieceDiv.classList.add("square-"+endPos)
-		for (let i = 1; i < action.length-1; ++i) {
-			const capturedPos = action[i]
-			this.animateRemovePiece(capturedPos)
-		}
+		return new Promise(async (resolve) => {
+			for (let i = 1; i < action.length-1; ++i) {
+				const capturedPos = action[i]
+				await this.animateRemovePiece(capturedPos)
+			}
 
-		// King the moved piece if it is on the opponents kings row
-		this.tryMakeKing(pieceDiv, endPos)
+			// King the moved piece if it is on the opponents kings row
+			await this.tryMakeKing(pieceDiv, endPos)
+			resolve()
+		})
 	}
 
 	/**
